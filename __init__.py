@@ -11,8 +11,10 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+app.app_context().push()
 
 #initiate db
 db.init_app(app)
+db.create_all()
 
 import views
