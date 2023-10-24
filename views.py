@@ -1,11 +1,13 @@
-from imgcap import app
-from flask import render_template, request
+from app import app
+from flask import redirect, url_for, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 from models.Img import Img
 import os
 from utilities.DbStorage import DbStorage
 from db import db
+
+import base64
 
 @app.route("/")
 def home():
@@ -30,10 +32,17 @@ def upload():
 
         with open(file_path, 'rb') as f:
             DbStore = DbStorage()
-            img = Img(name=filename, img=DbStore.convert_b64(f.read()))
+            img:Img = Img(name=filename, img=DbStore.convert_b64(f.read()))
             db.session.add(img)
             db.session.commit()
-    return 'File uploaded successfully', 200
+    return redirect(url_for('display'))
+
+@app.route('/display')
+def display():
+    file: Img = Img.query.first()
+    decoded_image = base64.b64decode(file.img)
+    image_url = "data:image/png;base64," + base64.b64encode(decoded_image).decode('utf-8')
+    return render_template('display.html', image_url=image_url)
 
 
 
