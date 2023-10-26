@@ -17,6 +17,7 @@ app.app_context().push()
 #initiate db
 db.init_app(app)
 with app.app_context():
+    db.drop_all()
     db.create_all()
 
 import views

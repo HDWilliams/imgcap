@@ -17,22 +17,21 @@ def home():
 @app.route('/upload', methods = ['POST'])
 #handle img uploading and save to db
 def upload():
-    file = request.files['image']
+    file = request.files['file']
     #DbStore = DbStorage()
-    img:Img = Img(name=file.filename, img=file.read())
-    print(len(file.read()))
+    encoded_data = base64.b64encode(file.read()).decode('ascii')
+    img:Img = Img(name=file.filename, img=encoded_data)
+    print(f"Stored data: {len(img.img)}")
     db.session.add(img)
     db.session.commit()
-        
     return redirect(url_for('display'))
 
 @app.route('/display')
 def display():
     file: Img = Img.query.first()
-    
-    image_data = base64.b64encode(file.img).decode('ascii')
-    if image_data is not None:
-        return render_template('display.html', image_data = image_data)
+    print(f"Retrieved data: {len(file.img)}")
+    if file.img is not None:
+        return render_template('display.html', image_data = file.img)
     else:
         return 'Image Not Found', 404
 

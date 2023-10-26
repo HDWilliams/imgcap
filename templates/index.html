@@ -9,5 +9,37 @@
   <input type="submit" value="Upload">
 </form>
 
+<script>
+///
+  // First, select the form using its method and action attributes
+var form = document.querySelector('form[method="POST"][action="/upload"]');
+
+// Then, select the file input and submit button
+var fileInput = form.querySelector('input[type="file"]');
+var submitButton = form.querySelector('input[type="submit"]');
+
+// Add an event listener to the submit button
+submitButton.addEventListener('click', function(event) {
+  // Prevent the default form submission
+  event.preventDefault();
+
+  // Log the selected file to the console
+  var file = fileInput.files[0];
+  console.log(file);
+
+  // Create a new FormData object
+  var formData = new FormData();
+  formData.append('file', file);
+
+  // Use the fetch API to submit the form data
+  fetch('/upload', {
+    method: 'POST',
+    body: formData
+  })
+  .then(data => console.log(data))
+  .catch(error => console.error(error));
+});
+</script>
+
 </body>
 </html>  
