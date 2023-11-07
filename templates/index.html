@@ -4,10 +4,20 @@
 </head>
 <body>
 <h1>upload your image</h1>
+
+<form method="POST" action="/search" enctype="application/x-www-form-urlencoded">
+<input type="text" value="query" placeholder="search">
+<input type="submit" value="search">
+</form>
+
 <form method="POST" action="/upload" enctype="multipart/form-data">
   <input type="file" name="image">
   <input type="submit" value="Upload">
 </form>
+
+{% for image in images %}
+  <img src="{{ url_for('serve_image', id=image.id) }}" alt="Image">
+{% endfor %}
 
 <script>
 ///
