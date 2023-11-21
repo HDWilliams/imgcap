@@ -28,16 +28,15 @@ def upload():
     db.session.commit()
     return redirect(url_for('home'))
 
-""" 
-@app.route('/display')
-def display():
-    file: Img = Img.query.first()
-    print(f"Retrieved data: {len(file.img)}")
-    if file.img is not None:
-        return render_template('display.html', image_data = file.img)
-    else:
-        return 'Image Not Found', 404 
-"""
+
+
+
+
+@app.route('/search', methods = ['GET'])
+def search():
+    data: Img = Img.query.filter_by(tags = request.values.get('search'))
+    return render_template('index.html', images=data)
+
 
 @app.route('/image/<int:id>')
 def serve_image(id):

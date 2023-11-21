@@ -5,8 +5,8 @@
 <body>
 <h1>upload your image</h1>
 
-<form method="POST" action="/search" enctype="application/x-www-form-urlencoded">
-<input type="text" value="query" placeholder="search">
+<form method="GET" action="/search" enctype="application/x-www-form-urlencoded">
+<input type="text" name="search" value="query" placeholder="search">
 <input type="submit" value="search">
 </form>
 
@@ -44,9 +44,14 @@ submitButton.addEventListener('click', function(event) {
   // Use the fetch API to submit the form data
   fetch('/upload', {
     method: 'POST',
-    body: formData
+    body: formData,
+    redirect: 'follow'
   })
-  .then(data => console.log(data))
+  .then((response)=>{         
+        if(response.redirected){
+            window.location.href = response.url;
+        }
+      })   
   .catch(error => console.error(error));
 });
 </script>
