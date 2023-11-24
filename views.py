@@ -8,8 +8,9 @@ from utilities.DbStorage import DbStorage
 from db import db
 import io
 import datetime
+from html import escape
 
-import base64
+from utilities.CaptionTask import CaptionTask 
 
 @app.route("/")
 def home():
@@ -20,12 +21,20 @@ def home():
 #handle img uploading and save to db
 def upload():
     file = request.files['file']
+    #get file type to accept PNG of JPEGs
+    file_path = secure_filename(file.filename)
+    _, ext = file_path.split('.')
+    print(ext)
+
     #DbStore = DbStorage()
     img_data = file.read()
-    img:Img = Img(name=file.filename, img=img_data)
-    print(f"Stored data: {len(img.img)}")
+    img:Img = Img(name=file.filename, img=img_data, image_type = ext)
     db.session.add(img)
     db.session.commit()
+
+    #start image captioning with GPT
+    task = CaptionTask(img.img, img.image_type, img.id)
+    task.start()
     return redirect(url_for('home'))
 
 
@@ -34,14 +43,14 @@ def upload():
 
 @app.route('/search', methods = ['GET'])
 def search():
-    data: Img = Img.query.filter_by(tags = request.values.get('search'))
+    data: Img = Img.query.filter_by(tags = escape(request.values.get('search')))
     return render_template('index.html', images=data)
 
 
 @app.route('/image/<int:id>')
 def serve_image(id):
-    image: Img = Img.query.get(id)
-    return send_file(io.BytesIO(image.img), mimetype='image/jpeg')
+    img: Img = Img.query.get(id)
+    return send_file(io.BytesIO(img.img), mimetype=f'image/{img.image_type}')
 
 
 
