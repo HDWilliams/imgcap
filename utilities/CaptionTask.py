@@ -1,6 +1,6 @@
 from threading import Thread
 from openai import OpenAI
-from base64 import b64decode
+from base64 import b64encode
 from dotenv import load_dotenv
 import os
 import requests
@@ -13,11 +13,11 @@ import app
 class CaptionTask(Thread):
     def __init__(self, image, image_type, image_id):
         Thread.__init__(self)
-        self.image = b64decode(image)
+        self.image = b64encode(image)
         self.image_type = image_type
         self.image_id = image_id
     
-    def getImage(self, tags):
+    def updateTags(self, tags):
         with app.app.app_context():
             img: Img = Img.query.get(self.image_id)
             img.tags = tags
@@ -27,10 +27,15 @@ class CaptionTask(Thread):
             return 
 
     def run(self):
+        #[2:-1] used to remove b' from beginning and ' from end of b64 encoded string
+
+        #USED FOR DEV ONLY TO AVOID SSL ISSUES FROM LOCAL SERVER
+        os.environ['REQUESTS_CA_BUNDLE'] = r'C:\Users\Hugh Day-Williams\CodingProjects\certadmin.crt'
+
         
         headers = {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {os.getenv('GPT_SECRET_KEY')}"
+            "Authorization": f"Bearer {os.environ.get('GPT_SECRET_KEY')}"
         }
         payload = {
             "model": "gpt-4-vision-preview",
@@ -43,7 +48,7 @@ class CaptionTask(Thread):
                         {
                             "type": "image_url",
                             "image_url": {
-                                "url": f"data:image/{self.image_type};base64,{self.image}"
+                                "url": f"data:image/{self.image_type};base64,{str(self.image)[2:-1]}" 
                             }
                         }
                     ]
@@ -51,10 +56,13 @@ class CaptionTask(Thread):
             ],
             "max_tokens": 300
         }
-        #response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-        #print(response['choices'][0]['message']['content'])
+        response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
+        print(response.json())
 
-        self.getImage('lion')
+        #USE ONLY FIRST TAG UNTIL DB CAN BE CHANGED TO ACCEPT ARRAYS
+        #data is returned as a comma seperated string
+        tags = str.split(response.json()['choices'][0]['message']['content'], ",")
+        self.updateTags(tags[0])
 
         return
 

@@ -24,7 +24,6 @@ def upload():
     #get file type to accept PNG of JPEGs
     file_path = secure_filename(file.filename)
     _, ext = file_path.split('.')
-    print(ext)
 
     #DbStore = DbStorage()
     img_data = file.read()
