@@ -1,10 +1,12 @@
 from app import app
 from flask import send_file, redirect, url_for, render_template, request
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.utils import secure_filename
+
 from models.Img import Img
+from models.Tag import Tag
+from models.ImgTags import ImgTags
 import os
-from utilities.DbStorage import DbStorage
+from utilities.DbInterface import DbInterface
 from db import db
 import io
 import datetime
@@ -21,15 +23,10 @@ def home():
 #handle img uploading and save to db
 def upload():
     file = request.files['file']
-    #get file type to accept PNG of JPEGs
-    file_path = secure_filename(file.filename)
-    _, ext = file_path.split('.')
+    
 
-    #DbStore = DbStorage()
-    img_data = file.read()
-    img:Img = Img(name=file.filename, img=img_data, image_type = ext)
-    db.session.add(img)
-    db.session.commit()
+    db_interface = DbInterface()
+    img:Img = db_interface.img_file_save(file)
 
     #start image captioning with GPT
     task = CaptionTask(img.img, img.image_type, img.id)

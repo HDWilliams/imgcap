@@ -5,9 +5,8 @@ from dotenv import load_dotenv
 import os
 import requests
 from db import db
-from models.Img import Img 
-import app
 
+from  utilities.DbInterface import DbInterface
 
 
 class CaptionTask(Thread):
@@ -16,15 +15,6 @@ class CaptionTask(Thread):
         self.image = b64encode(image)
         self.image_type = image_type
         self.image_id = image_id
-    
-    def updateTags(self, tags):
-        with app.app.app_context():
-            img: Img = Img.query.get(self.image_id)
-            img.tags = tags
-            db.session.add(img)
-            db.session.commit()
-
-            return 
 
     def run(self):
         #[2:-1] used to remove b' from beginning and ' from end of b64 encoded string
@@ -62,7 +52,11 @@ class CaptionTask(Thread):
         #USE ONLY FIRST TAG UNTIL DB CAN BE CHANGED TO ACCEPT ARRAYS
         #data is returned as a comma seperated string
         tags = str.split(response.json()['choices'][0]['message']['content'], ",")
-        self.updateTags(tags[0])
+        
+        #update tag
+        db_interface = DbInterface()
+        for tag in tags: 
+            db_interface.update_tags(self.image_id, tag)
 
         return
 
