@@ -1,8 +1,9 @@
 from flask import Flask
 from db import db
-from models.Img import Img
-from models.Tag import Tag
-from models.ImgTags import ImgTags
+#from models.Img import Img
+#from models.Tag import Tag
+#from models.ImgTags import ImgTags
+from models.All import Img, Tag, ImgTags
 import os
 
 app = Flask(__name__)

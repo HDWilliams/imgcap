@@ -24,7 +24,6 @@ class Img(db.Model):
 class Tag(db.Model):
     __tablename__ = "Tag"
     id = Column(Integer, primary_key=True)
-    images = db.relationship('Img', secondary=ImgTags, backref=db.backref('tags'))
     value = Column(String(200))
 
     def __repr__(self) -> str:

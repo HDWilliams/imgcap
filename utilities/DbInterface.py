@@ -1,7 +1,8 @@
 import base64
-from models.Img import Img
-from models.Tag import Tag
-from models.ImgTags import ImgTags
+#from models.Img import Img
+#from models.Tag import Tag
+#from models.ImgTags import ImgTags
+from models.All import Img, Tag, ImgTags
 import app
 from db import db
 from werkzeug.utils import secure_filename
@@ -28,12 +29,14 @@ class DbInterface:
         return img
 
 
-    def update_tags(self, image_id, tag):
+    def update_tags(self, image_id, tags):
         with app.app.app_context():
-            tag = Tag(value = tag)
+            img:Img = Img.query.get(image_id)
+            for tag_to_add in tags:
+                tag = Tag(value = tag_to_add)
+                img.tags.append(tag)
             db.session.add(tag)
-            db.session.commit()
-            tag.parent.append(image_id)
+            db.session.add(img)
             db.session.commit()
             return
     

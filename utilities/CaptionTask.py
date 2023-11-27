@@ -47,16 +47,13 @@ class CaptionTask(Thread):
             "max_tokens": 300
         }
         response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-        print(response.json())
 
         #USE ONLY FIRST TAG UNTIL DB CAN BE CHANGED TO ACCEPT ARRAYS
         #data is returned as a comma seperated string
         tags = str.split(response.json()['choices'][0]['message']['content'], ",")
-        
         #update tag
         db_interface = DbInterface()
-        for tag in tags: 
-            db_interface.update_tags(self.image_id, tag)
+        db_interface.update_tags(self.image_id, tags)
 
         return
 

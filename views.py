@@ -2,15 +2,16 @@ from app import app
 from flask import send_file, redirect, url_for, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 
-from models.Img import Img
-from models.Tag import Tag
-from models.ImgTags import ImgTags
+#from models.Img import Img
+#from models.Tag import Tag
+#from models.ImgTags import ImgTags
+from models.All import Img, Tag, ImgTags
 import os
 from utilities.DbInterface import DbInterface
 from db import db
 import io
 import datetime
-from html import escape
+from html import escape 
 
 from utilities.CaptionTask import CaptionTask 
 
@@ -39,8 +40,15 @@ def upload():
 
 @app.route('/search', methods = ['GET'])
 def search():
-    data: Img = Img.query.filter_by(tags = escape(request.values.get('search')))
-    return render_template('index.html', images=data)
+    relevant_tags = Tag.query.filter_by(value=escape(request.values.get('search'))).first()
+    print(relevant_tags)
+    if relevant_tags:
+        print(relevant_tags.value)
+        image_data = [image for image in relevant_tags.images]
+    else:
+        image_data = []
+    
+    return render_template('index.html', images=image_data)
 
 
 @app.route('/image/<int:id>')
