@@ -32,8 +32,9 @@ class DbInterface:
     def update_tags(self, image_id, tags):
         with app.app.app_context():
             img:Img = Img.query.get(image_id)
+            print(tags)
             for tag_to_add in tags:
-                tag = Tag(value = tag_to_add)
+                tag = Tag(value = tag_to_add.strip())
                 img.tags.append(tag)
             db.session.add(tag)
             db.session.add(img)

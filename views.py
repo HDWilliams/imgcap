@@ -1,5 +1,5 @@
 from app import app
-from flask import send_file, redirect, url_for, render_template, request
+from flask import send_file, redirect, url_for, render_template, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 
 #from models.Img import Img
@@ -34,6 +34,11 @@ def upload():
     task.start()
     return redirect(url_for('home'))
 
+@app.route('/autocomplete')
+def autocomplete():
+    tags = db.session.query(Tag).all()
+    tags = [tag.value for tag in tags]
+    return jsonify(tags)
 
 
 
@@ -41,9 +46,7 @@ def upload():
 @app.route('/search', methods = ['GET'])
 def search():
     relevant_tags = Tag.query.filter_by(value=escape(request.values.get('search'))).first()
-    print(relevant_tags)
     if relevant_tags:
-        print(relevant_tags.value)
         image_data = [image for image in relevant_tags.images]
     else:
         image_data = []

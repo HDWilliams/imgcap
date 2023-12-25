@@ -1,12 +1,16 @@
 <html>
 <head>
 <title>Img Cap</title>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 </head>
 <body>
 <h1>upload your image</h1>
 
-<form method="GET" action="/search" enctype="application/x-www-form-urlencoded">
-<input type="text" name="search" value="query" placeholder="search">
+<form autocomplete="off" method="GET" action="/search" enctype="application/x-www-form-urlencoded">
+<input id="search" type="text" name="search" placeholder="search">
 <input type="submit" value="search">
 </form>
 
@@ -20,6 +24,7 @@
 {% endfor %}
 
 <script>
+
 ///
   // First, select the form using its method and action attributes
 var form = document.querySelector('form[method="POST"][action="/upload"]');
@@ -55,6 +60,26 @@ submitButton.addEventListener('click', function(event) {
   .catch(error => console.error(error));
 });
 </script>
+<script>
+  $(document).ready(function() {
+  $("#search").autocomplete({
+    source: function(request, response) {
+      var matcher = new RegExp("^" + $.ui.autocomplete.escapeRegex(request.term), "i");
+      fetch("/autocomplete", {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        response(data.filter(item => matcher.test(item)));
+      })
+      .catch(error => console.error('Error:', error));
+    }
+  });
+});
 
+  </script>
 </body>
 </html>  
