@@ -1,28 +1,82 @@
-<html>
+<!DOCTYPE html>
+<html class="has-background-dark">
 <head>
 <title>Img Cap</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+<link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
 <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
+<style>
+  .section {
+    padding: 0;
+  }
+  .container {
+    max-width: 100%;
+  }
+  .columns {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .column {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .image img {
+    width: 100%;
+    height: auto;
+  }
+  .image {
+    height: auto !important;
+  }
+</style>
 </head>
+
+
+
 <body>
-<h1>upload your image</h1>
 
-<form autocomplete="off" method="GET" action="/search" enctype="application/x-www-form-urlencoded">
-<input id="search" type="text" name="search" placeholder="search">
-<input type="submit" value="search">
-</form>
+  <nav class="panel">
+    <div class="has-background-dark">
+      <p class="panel-heading">
+        Image Search
+      </p>
+        <form method="POST" action="/upload" enctype="multipart/form-data">
+          <input class="button fa-solid fa-plus is-rounded is-primary" type="file" name="image"> <input class="button is-rounded is-primary" type="submit" value="Upload">
+        </form>
+        <a href="/">X</a>
+    </div>
+  </nav>
 
-<form method="POST" action="/upload" enctype="multipart/form-data">
-  <input type="file" name="image">
-  <input type="submit" value="Upload">
-</form>
+  <div class="columns">
+    <div>
+        <form class="field" autocomplete="off" method="GET" action="/search" enctype="application/x-www-form-urlencoded">
+          <input class="input" id="search" type="text" name="search" placeholder="search">
+          <input class="button is-primary" type="submit" value="search">
+        </form>
+      </div>
+  </div>
 
-{% for image in images %}
-  <img src="{{ url_for('serve_image', id=image.id) }}" alt="Image">
-{% endfor %}
 
+  <section class="section">
+    <div class="container">
+      <div class="columns is-gapless is-multiline">
+        {% for column_images in images %}
+        <div class="column">
+        {% for image in column_images %}
+            <figure class="image">
+              <img src="{{ url_for('serve_image', id=image.id) }}" alt="Image">
+            </figure>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+    </div>
+  </section>
 <script>
 
 ///
@@ -61,6 +115,7 @@ submitButton.addEventListener('click', function(event) {
 });
 </script>
 <script>
+  //AUTOCOMPLETE WITH JQUERY AND FILTERING OF AUTOCOMPLETE SUGGESTIONS
   $(document).ready(function() {
   $("#search").autocomplete({
     source: function(request, response) {

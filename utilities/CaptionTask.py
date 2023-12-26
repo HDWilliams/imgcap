@@ -10,6 +10,7 @@ from  utilities.DbInterface import DbInterface
 
 
 class CaptionTask(Thread):
+    #SEND IMAGE DATA TO CHATGPT FOR CAPTIONING
     def __init__(self, image, image_type, image_id):
         Thread.__init__(self)
         self.image = b64encode(image)

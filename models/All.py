@@ -2,6 +2,9 @@ from db import db
 from sqlalchemy.orm import declarative_base
 from sqlalchemy import String, Column, Integer
 
+#INCLUDING ALL DB MODELS IN ONE FILE FOR EASIER LOADING AND CONNECTING TABLES
+#ORDER OF IMPORT MATTERS
+
 ImgTags = db.Table('imgtags', db.metadata,
     db.Column('image_id', db.Integer, db.ForeignKey('Img.id')),
     db.Column('tag_id', db.Integer, db.ForeignKey('Tag.id'))
