@@ -6,9 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-<link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
 <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://kit.fontawesome.com/3197ac8a0a.js" crossorigin="anonymous"></script>
 
 <style>
   .section {
@@ -33,6 +33,9 @@
   .image {
     height: auto !important;
   }
+  input[type="file"] {
+    display: none;
+}
 </style>
 </head>
 
@@ -40,23 +43,31 @@
 
 <body>
 
-  <nav class="panel">
-    <div class="has-background-dark">
-      <p class="panel-heading">
-        Image Search
-      </p>
+  <nav class="panel has-background-dark">
+    <div class="columns">
+      <div class=" column has-background-dark">
+        <a href="/"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+      </div>  
+      <div class="column">
         <form method="POST" action="/upload" enctype="multipart/form-data">
-          <input class="button fa-solid fa-plus is-rounded is-primary" type="file" name="image"> <input class="button is-rounded is-primary" type="submit" value="Upload">
+          <label for="file-upload" class="button is-rounded is-primary"> + </label>
+          <input id="file-upload" type="file" name="image"> <input class="button is-rounded is-primary" type="submit" value="Upload">
         </form>
-        <a href="/">X</a>
+      </div> 
     </div>
   </nav>
 
   <div class="columns">
     <div>
         <form class="field" autocomplete="off" method="GET" action="/search" enctype="application/x-www-form-urlencoded">
-          <input class="input" id="search" type="text" name="search" placeholder="search">
-          <input class="button is-primary" type="submit" value="search">
+          <div class="field has-addons">
+            <div class="control">
+              <input class="input" id="search" type="search" name="search" placeholder="search">
+            </div>
+            <div class="control">
+              <input class="button is-primary" type="submit" value="search">
+            </div>
+          </div>
         </form>
       </div>
   </div>
