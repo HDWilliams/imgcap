@@ -50,8 +50,8 @@
       </div>  
       <div class="column">
         <form method="POST" action="/upload" enctype="multipart/form-data">
-          <label for="file-upload" class="button is-rounded is-primary"> + </label>
-          <input id="file-upload" type="file" name="image"> <input class="button is-rounded is-primary" type="submit" value="Upload">
+          <label for="file-upload" class="button is-rounded is-ghost"> <i class="fa-solid fa-plus"></i></label>
+          <input id="file-upload" type="file" name="image"> 
         </form>
       </div> 
     </div>
@@ -96,10 +96,8 @@ var form = document.querySelector('form[method="POST"][action="/upload"]');
 
 // Then, select the file input and submit button
 var fileInput = form.querySelector('input[type="file"]');
-var submitButton = form.querySelector('input[type="submit"]');
-
 // Add an event listener to the submit button
-submitButton.addEventListener('click', function(event) {
+fileInput.addEventListener('change', function(event) {
   // Prevent the default form submission
   event.preventDefault();
 
