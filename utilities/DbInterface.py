@@ -5,7 +5,6 @@ import base64
 from models.All import Img, Tag, ImgTags
 import app
 from db import db
-from werkzeug.utils import secure_filename
 
 class DbInterface:
     """handles database storage of images and tags
@@ -16,17 +15,15 @@ class DbInterface:
     def __init__(self) -> None:
         pass
     
-    def img_file_save(self, file) -> Img:
+    def img_file_save(self, file_path, uri) -> Img:
         #get file type to accept PNG of JPEGs
         #input: image file, png or jpeg
 
         #get ext to save properly and read data
-        file_path = secure_filename(file.filename)
         _, ext = file_path.split('.')
-        data = file.read()
 
         #CREATE IMG OBJECT AND SAVE
-        img:Img = Img(name = file_path, img = data, image_type = ext)
+        img:Img = Img(name = file_path, img_uri = uri, image_type = ext)
         db.session.add(img)
         db.session.commit()
         return img

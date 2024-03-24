@@ -36,6 +36,24 @@
   input[type="file"] {
     display: none;
 }
+.bottom-right-button-container {
+  position: fixed;
+  bottom: 5rem;
+  right: 5rem;
+}
+.no-pad-button {
+  padding: 0;
+  padding-left: 1.5em !important;
+  padding-right: 1.5em !important;
+  padding-top: 2em;
+  padding-bottom: 1.9em;
+}
+.nav-left {
+  padding-left: 2em;
+}
+.top-search {
+  padding-bottom: 2rem;
+}
 </style>
 </head>
 
@@ -44,33 +62,29 @@
 <body>
 
   <nav class="panel has-background-dark">
-    <div class="columns">
-      <div class=" column has-background-dark">
-        <a href="/"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
-      </div>  
-      <div class="column">
-        <form method="POST" action="/upload" enctype="multipart/form-data">
-          <label for="file-upload" class="button is-rounded is-ghost"> <i class="fa-solid fa-plus"></i></label>
-          <input id="file-upload" type="file" name="image"> 
-        </form>
-      </div> 
-    </div>
+
+    <a href="/"><i class="nav-left fa fa-arrow-left" aria-hidden="true"></i></a>
+
   </nav>
 
-  <div class="columns">
-    <div>
-        <form class="field" autocomplete="off" method="GET" action="/search" enctype="application/x-www-form-urlencoded">
-          <div class="field has-addons">
-            <div class="control">
-              <input class="input" id="search" type="search" name="search" placeholder="search">
-            </div>
-            <div class="control">
-              <input class="button is-primary" type="submit" value="search">
-            </div>
-          </div>
-        </form>
+  <form method="POST" action="/upload" enctype="multipart/form-data" class="bottom-right-button-container">
+    <label for="file-upload" class="button no-pad-button is-rounded is-primaroy is-large"> <i class="fa-solid fa-plus"></i></label>
+    <input id="file-upload" type="file" accept=".jpg, .png" name="image"> 
+  </form>
+
+  <div class="top-search">
+    <form class="field" autocomplete="off" method="GET" action="/search" enctype="application/x-www-form-urlencoded">
+      <div class="field has-addons" style="justify-content: center;">
+        <div class="control">
+          <input class="input" id="search" type="search" name="search" placeholder="search">
+        </div>
+        <div class="control">
+          <input class="button is-primary" type="submit" value="search">
+        </div>
       </div>
+    </form>
   </div>
+
 
 
   <section class="section">
@@ -80,7 +94,7 @@
         <div class="column">
         {% for image in column_images %}
             <figure class="image">
-              <img src="{{ url_for('serve_image', id=image.id) }}" alt="Image">
+              <img src="{{ image.img_uri }}" alt="Image">
             </figure>
         {% endfor %}
       </div>

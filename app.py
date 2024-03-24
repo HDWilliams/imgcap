@@ -9,7 +9,8 @@ app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 #Database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///temp.sqlite3'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
+#Keeping option on for now to save data, may use later for hooks on when captioning tasks complete
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.app_context().push()

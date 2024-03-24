@@ -14,6 +14,10 @@ import datetime
 from html import escape 
 
 from utilities.CaptionTask import CaptionTask 
+from utilities.upload_to_aws import upload_to_aws
+
+from werkzeug.utils import secure_filename
+
 
 @app.route("/")
 def home():
@@ -29,10 +33,17 @@ def upload():
 
     #GET FILE
     file = request.files['file']
-
-
+    
     db_interface = DbInterface()
-    img:Img = db_interface.img_file_save(file)
+    
+    #SECURE FILE NAME AGAINST MALICIOUS TEXT
+    filename_secured = secure_filename(file.filename)
+
+    #UPLOAD TO AWS AND RETURN URI
+    #THEN ADD TO DB
+    image_uri = upload_to_aws(file.read(), filename_secured)
+    if image_uri:
+        img:Img = db_interface.img_file_save(filename_secured, image_uri)
 
     #start image captioning with GPT
     #CREATE NEW THREAD
@@ -66,7 +77,11 @@ def search():
 def serve_image(id):
     #SERVES IMAGES FOR DISPLAY, PROVIDES IMAGES AS BYTES
     img: Img = Img.query.get(id)
-    return send_file(io.BytesIO(img.img), mimetype=f'image/{img.image_type}')
+    
+    # used for db storage of images, depricated in favor of s3 storage
+    # return send_file(io.BytesIO(img.img), mimetype=f'image/{img.image_type}')
+
+    return img.img_uri
 
 
 

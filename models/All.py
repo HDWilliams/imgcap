@@ -15,7 +15,7 @@ class Img(db.Model):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(200))
-    img = Column(String)
+    img_uri = Column(String)
     image_type = Column(String(200))
     description = Column(String(200))
     tags = db.relationship('Tag', secondary=ImgTags, backref=db.backref('images'))
