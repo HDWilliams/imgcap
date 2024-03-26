@@ -17,8 +17,10 @@ app.app_context().push()
 
 #initiate db
 db.init_app(app)
+"""
+REMOVED FOR PRODUCTION TO TABLES ARE NOT RECREATED
 with app.app_context():
     db.drop_all()
     db.create_all()
-
+"""
 import views

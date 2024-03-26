@@ -42,12 +42,13 @@ def upload():
     #UPLOAD TO AWS AND RETURN URI
     #THEN ADD TO DB
     image_uri = upload_to_aws(file.read(), filename_secured)
+    print(image_uri)
     if image_uri:
         img:Img = db_interface.img_file_save(filename_secured, image_uri)
 
     #start image captioning with GPT
     #CREATE NEW THREAD
-    task = CaptionTask(img.img, img.image_type, img.id)
+    task = CaptionTask(image_uri, img.image_type, img.id)
     task.start()
     return redirect(url_for('home'))
 

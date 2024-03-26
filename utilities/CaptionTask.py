@@ -13,7 +13,7 @@ class CaptionTask(Thread):
     #SEND IMAGE DATA TO CHATGPT FOR CAPTIONING
     def __init__(self, image, image_type, image_id):
         Thread.__init__(self)
-        self.image = b64encode(image)
+        self.image = image
         self.image_type = image_type
         self.image_id = image_id
 
@@ -61,7 +61,7 @@ class CaptionTask(Thread):
                             {
                                 "type": "image_url",
                                 "image_url": {
-                                    "url": f"data:image/{self.image_type};base64,{str(self.image)[2:-1]}",
+                                    "url": self.image #f"data:image/{self.image_type};base64,{str(self.image)[2:-1]}",
                                 },
                             }
                         ],
@@ -75,7 +75,7 @@ class CaptionTask(Thread):
             pass
 
         #data is returned as a comma seperated string
-        tags = str.split(response['choices'][0]['message']['content'], ",")
+        tags = str.split(response.choices[0].message.content, ",")
         #update tag
         db_interface = DbInterface()
         db_interface.update_tags(self.image_id, tags)
