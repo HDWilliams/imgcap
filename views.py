@@ -62,11 +62,16 @@ def autocomplete():
 @app.route('/search', methods = ['GET'])
 def search():
     #OBTAIN RELEVANT TAGS, GET ASOCCIATED IMAGES FROM TAGS AND SPLIT INTO TWO LISTS FOR DISPLAY
-    relevant_tags = Tag.query.filter_by(value=escape(request.values.get('search'))).all()
+    relevant_tags = Tag.query.filter(Tag.value.like(escape(request.values.get('search'))+"%")).all()
     if relevant_tags:
         image_data = []
+
+        #ITERATE OVER ALL TAGS TO GET LINKED IMAGES
         for tag in relevant_tags:
             image_data += tag.images
+
+        #REMOVE DUPLICATE IMAGES WHEN MULTIPLE TAGS POINT TO SAME IMAGE
+        image_data = list(set(image_data))
         image_data = [image_data[int(len(image_data)//2):], image_data[:int(len(image_data)//2)]]
     else:
         image_data = []
