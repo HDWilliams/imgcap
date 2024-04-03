@@ -5,6 +5,7 @@ import base64
 from models.All import Img, Tag, ImgTags
 import app
 from db import db
+from flask import flash
 
 class DbInterface:
     """handles database storage of images and tags
@@ -15,7 +16,7 @@ class DbInterface:
     def __init__(self) -> None:
         pass
     
-    def img_file_save(self, file_path, uri) -> Img:
+    def img_file_save(file_path, uri) -> Img:
         #get file type to accept PNG of JPEGs
         #input: image file, png or jpeg
 
@@ -29,7 +30,7 @@ class DbInterface:
         return img
 
 
-    def update_tags(self, image_id, tags):
+    def update_tags(image_id, tags):
         #update an existing image with tags from chatgpt
         #input: list of strings(tags)
         with app.app.app_context():
@@ -45,5 +46,20 @@ class DbInterface:
             db.session.add(img)
             db.session.commit()
             return
+    
+    def delete_img(image:Img):
+        """DELETE IMAGE FROM DATABASE, BEFORE DELETION FROM CDN
+        RETURNS TRUE ON SUCCESS AND FALSE ON FAILURE
+                
+        """
+        success = True
+        try:
+            db.session.delete(image)
+            db.session.commit()
+        except Exception as e:
+            flash('Delete operation failed. Please try again.')
+            success = False
+        return success
+            
     
 

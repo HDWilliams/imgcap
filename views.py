@@ -14,7 +14,7 @@ import datetime
 from html import escape 
 
 from utilities.CaptionTask import CaptionTask 
-from utilities.upload_to_aws import upload_to_aws
+from utilities.ImageStorageInterface import ImageStorageInterface
 
 from werkzeug.utils import secure_filename
 
@@ -34,17 +34,15 @@ def upload():
     #GET FILE
     file = request.files['file']
     
-    db_interface = DbInterface()
-    
     #SECURE FILE NAME AGAINST MALICIOUS TEXT
     filename_secured = secure_filename(file.filename)
 
     #UPLOAD TO AWS AND RETURN URI
     #THEN ADD TO DB
-    image_uri = upload_to_aws(file.read(), filename_secured)
+    image_uri = ImageStorageInterface.upload_to_aws(file.read(), filename_secured)
     print(image_uri)
     if image_uri:
-        img:Img = db_interface.img_file_save(filename_secured, image_uri)
+        img:Img = DbInterface.img_file_save(filename_secured, image_uri)
 
     #start image captioning with GPT
     #CREATE NEW THREAD
@@ -88,6 +86,20 @@ def serve_image(id):
     # return send_file(io.BytesIO(img.img), mimetype=f'image/{img.image_type}')
 
     return img.img_uri
+
+@app.route('/delete/<int:id>', methods = ['POST'])
+def delete(id):
+    #DELETES IMAGES BASED ON ID. IMAGE DELETED FROM DB FIRST THEN REMOVED FROM CDN
+    img:Img = Img.query.filter_by(id = id).one()
+    print(img)
+    success = DbInterface.delete_img(img)
+    print(success)
+    #ONLY REMOVE FROM CDN IF REMOVED FROM DB TO AVOID IMAGE NOT FOUND ERROR
+    if success:
+        ImageStorageInterface.delete_from_aws(img.name)
+    return redirect(url_for('home'))
+
+
 
 
 

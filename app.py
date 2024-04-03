@@ -4,6 +4,7 @@ from models.All import Img, Tag, ImgTags
 import os
 
 app = Flask(__name__)
+app.secret_key = os.getenv("SESSION_SECRET_KEY")
 
 #establish directory for the test db
 basedir = os.path.abspath(os.path.dirname(__file__))

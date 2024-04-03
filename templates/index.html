@@ -54,6 +54,18 @@
 .top-search {
   padding-bottom: 2rem;
 }
+
+.hide {
+  display: none;
+}
+
+.delete:hover + .hide {
+  display: block;
+  position: fixed;
+  top: 0;
+  right: 0;
+  position: absolute;
+}
 </style>
 </head>
 
@@ -96,6 +108,9 @@
             <figure class="image">
               <img src="{{ image.img_uri }}" alt="Image">
             </figure>
+            <form action="{{ url_for('delete', id = image.id)}}" method="post" style="position: absolute;">
+              <button type="submit" class="delete">X</button>
+            </form>
         {% endfor %}
       </div>
       {% endfor %}
