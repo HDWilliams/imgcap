@@ -77,8 +77,7 @@ class CaptionTask(Thread):
         #data is returned as a comma seperated string
         tags = str.split(response.choices[0].message.content, ",")
         #update tag
-        db_interface = DbInterface()
-        db_interface.update_tags(self.image_id, tags)
+        DbInterface.update_tags(self.image_id, tags)
 
         return
 

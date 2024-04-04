@@ -40,7 +40,6 @@ def upload():
     #UPLOAD TO AWS AND RETURN URI
     #THEN ADD TO DB
     image_uri = ImageStorageInterface.upload_to_aws(file.read(), filename_secured)
-    print(image_uri)
     if image_uri:
         img:Img = DbInterface.img_file_save(filename_secured, image_uri)
 
@@ -91,9 +90,7 @@ def serve_image(id):
 def delete(id):
     #DELETES IMAGES BASED ON ID. IMAGE DELETED FROM DB FIRST THEN REMOVED FROM CDN
     img:Img = Img.query.filter_by(id = id).one()
-    print(img)
     success = DbInterface.delete_img(img)
-    print(success)
     #ONLY REMOVE FROM CDN IF REMOVED FROM DB TO AVOID IMAGE NOT FOUND ERROR
     if success:
         ImageStorageInterface.delete_from_aws(img.name)

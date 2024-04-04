@@ -46,20 +46,34 @@ class DbInterface:
             db.session.add(img)
             db.session.commit()
             return
-    
+    @staticmethod
+    def delete_tags(image:Img):
+        try:
+            for tag in image.tags:
+                db.session.delete(tag)
+            db.session.commit()
+        except Exception as e:
+            flash("Failed to delete image tags. Please try again.")
+            return False
+        return True
     def delete_img(image:Img):
         """DELETE IMAGE FROM DATABASE, BEFORE DELETION FROM CDN
         RETURNS TRUE ON SUCCESS AND FALSE ON FAILURE
                 
         """
-        success = True
+        
         try:
+            success = DbInterface.delete_tags(image)
+            if success == False:
+                raise Exception('Tags not properly deleted')
             db.session.delete(image)
             db.session.commit()
         except Exception as e:
             flash('Delete operation failed. Please try again.')
-            success = False
-        return success
+            return False
+        return True
+
+    
             
     
 
