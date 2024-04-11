@@ -55,16 +55,29 @@
   padding-bottom: 2rem;
 }
 
-.hide {
-  display: none;
+.activate-buttton {
+  display: inline;
+  position: relative;
+
 }
 
-.delete:hover .hide {
-  display: block;
+.delete {
+  display: none;
   position: fixed;
   top: 0;
-  right: 0;
+  left: 0;
   position: absolute;
+  background: none;
+}
+
+.activate-buttton:hover .delete {
+  display: block;
+  
+}
+.delete-btn {
+    background: none;
+    border: none;
+  
 }
 </style>
 </head>
@@ -105,12 +118,14 @@
         {% for column_images in images %}
         <div class="column">
         {% for image in column_images %}
+          <div class="activate-buttton">
             <figure class="image">
               <img src="{{ image.img_uri }}" alt="Image">
             </figure>
-            <form action="{{ url_for('delete', id = image.id)}}" method="post" style="position: absolute;">
-              <button type="submit" class="delete">X</button>
+            <form class="delete" action="{{ url_for('delete', id = image.id)}}" method="post" style="position: absolute;">
+              <button class="delete-btn" type="submit">X</button>
             </form>
+          </div>
         {% endfor %}
       </div>
       {% endfor %}
