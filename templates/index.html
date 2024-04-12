@@ -63,11 +63,10 @@
 
 .delete {
   display: none;
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   position: absolute;
-  background: none;
 }
 
 .activate-buttton:hover .delete {
@@ -88,12 +87,12 @@
 
   <nav class="panel has-background-dark">
 
-    <a href="/"><i class="nav-left fa fa-arrow-left" aria-hidden="true"></i></a>
+    <a href="/"><i class="nav-left fa fa-home" aria-hidden="true"></i></a>
 
   </nav>
 
   <form method="POST" action="/upload" enctype="multipart/form-data" class="bottom-right-button-container">
-    <label for="file-upload" class="button no-pad-button is-rounded is-primaroy is-large"> <i class="fa-solid fa-plus"></i></label>
+    <label for="file-upload" class="button no-pad-button is-rounded is-primaroy is-normal"> <i class="fa-solid fa-plus"></i></label>
     <input id="file-upload" type="file" accept=".jpg, .png" name="image"> 
   </form>
 
@@ -101,10 +100,10 @@
     <form class="field" autocomplete="off" method="GET" action="/search" enctype="application/x-www-form-urlencoded">
       <div class="field has-addons" style="justify-content: center;">
         <div class="control">
-          <input class="input" id="search" type="search" name="search" placeholder="search">
+          <input class="input is-rounded" id="search" type="search" name="search" placeholder="search">
         </div>
         <div class="control">
-          <input class="button is-primary" type="submit" value="search">
+          <input class="button is-rounded is-primary" type="submit" value="search">
         </div>
       </div>
     </form>
