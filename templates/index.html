@@ -100,7 +100,7 @@
     <form class="field" autocomplete="off" method="GET" action="/search" enctype="application/x-www-form-urlencoded">
       <div class="field has-addons" style="justify-content: center;">
         <div class="control">
-          <input class="input is-rounded" id="search" type="search" name="search" placeholder="search">
+          <input class=" input is-rounded" id="search" type="search" name="search" placeholder="search">
         </div>
         <div class="control">
           <input class="button is-rounded is-primary" type="submit" value="search">
@@ -121,7 +121,7 @@
             <figure class="image">
               <img src="{{ image.img_uri }}" alt="Image">
             </figure>
-            <form class="delete" action="{{ url_for('delete', id = image.id)}}" method="post" style="position: absolute;">
+            <form class="delete" action="{{ url_for('delete', image_id = image.id)}}" method="post" style="position: absolute;">
               <button class="delete-btn" type="submit">X</button>
             </form>
           </div>
