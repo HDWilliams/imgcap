@@ -1,4 +1,5 @@
 import os
+import logging
 from io import BytesIO
 import boto3
 from botocore.exceptions import NoCredentialsError
@@ -32,6 +33,8 @@ def upload_to_aws(file, s3_file, bucket = os.getenv('BUCKET')):
     except NoCredentialsError:
         print("Credentials not available")
         return False
+    except Exception as e:
+        logging.exception(e)
 
 def delete_from_aws(key, bucket = os.getenv('BUCKET')):
     """ 
@@ -44,6 +47,12 @@ def delete_from_aws(key, bucket = os.getenv('BUCKET')):
     s3 = boto3.client('s3')
     try:
         s3.delete_object(Bucket=bucket, Key=key)
+    except FileNotFoundError:
+        print("The file was not found")
+        return False
+    except NoCredentialsError:
+        print("Credentials not available")
+        return False
     except Exception as e:
         flash('Delete operation has succeed at database level but failed to delete from CDN. No further action needed')
-    return
+    return True

@@ -1,7 +1,9 @@
 from flask import flash
+from html import escape
 from models.All import Img, Tag, ImgTags
 import app
 from db import db
+import logging
 
 
 def save_img(file_path, uri) -> Img:
@@ -32,7 +34,7 @@ def update_tags(image_id, tags):
         db.session.add(tag)
         db.session.add(img)
         db.session.commit()
-        return
+    return
 def get_img_from_tag(tags:list):
     """ get related images to a given list of tags"""
     images_from_tags = []
@@ -48,6 +50,7 @@ def delete_tags(image:Img):
             db.session.delete(tag)
         db.session.commit()
     except Exception as e:
+        logging.exception(e)
         flash("Failed to delete image tags. Please try again.")
         return False
     return True
@@ -64,9 +67,26 @@ def delete_img(image:Img):
         db.session.delete(image)
         db.session.commit()
     except Exception as e:
+        logging.exception(e)
         flash('Delete operation failed. Please try again.')
         return False
     return True
+
+def get_query_by_tag(search_query):
+    """OBTAIN RELEVANT TAGS FROM SEARCH QUERY
+    Args:
+        search_query(str): query from request
+    return:
+        list of tags
+        [] if exception
+    """
+    try:
+        tags_from_query = Tag.query.distinct(Tag.value).filter(Tag.value.like(escape(search_query) + "%")).all()
+    except FileNotFoundError:
+        return []
+    except Exception as e:
+        logging.exception(e)
+    return tags_from_query
 
 
         

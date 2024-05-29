@@ -2,6 +2,7 @@ import os
 from threading import Thread
 from openai import OpenAI
 from db import db
+import logging
 
 import utilities.DbInterface as DbInterface
 
@@ -45,9 +46,9 @@ class CaptionTask(Thread):
                 max_tokens=300,
             )
         except Exception as e:
-            #Handle API error here, e.g. retry or log
+            logging.exception(e)
             print(f"OpenAI API returned an API Error: {e}")
-            pass
+            
 
         #data is returned as a comma seperated string
         tags = str.split(response.choices[0].message.content, ",")
