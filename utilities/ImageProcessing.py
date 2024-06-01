@@ -1,7 +1,7 @@
 from werkzeug.utils import secure_filename
 import utilities.StorageInterface as StorageInterface
 import utilities.DbInterface as DbInterface
-from utilities.CaptionTask import CaptionTask
+from utilities.get_image_tags import get_image_tags_gpt
 from models.All import Img
 
 def process_image(file):
@@ -9,12 +9,12 @@ def process_image(file):
   filename_secured = secure_filename(file.filename)
   image_uri = StorageInterface.upload_to_aws(file.read(), filename_secured)
   if image_uri:
-      img = DbInterface.save_img(filename_secured, image_uri)
-
+    img = DbInterface.save_img(filename_secured, image_uri)
+    tags = get_image_tags_gpt(image_uri)
+    DbInterface.update_tags(img.id, tags)
   #BEGIN IMAGE CAPTIONING, AS OF 05/2024 USING CHATGPT FOR CAPTIONING
-  task = CaptionTask(image_uri, img.image_type, img.id)
-  task.start()
-  return
+  return 
+
 
 def delete_image_and_metadata(image_id):
   img = Img.query.filter_by(id = image_id).one()
