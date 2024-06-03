@@ -39,5 +39,12 @@ def get_image_tags_gpt(image_uri):
 
     return tags
 
+def tag_image(image_uri, image_id):
+    """get tags from chatgpt and update database asynchronously"""
+    tags = get_image_tags_gpt(image_uri)
+    if tags:
+        DbInterface.update_tags(image_id, tags)
+        print('tags updated from gpt')
+    return
 
 

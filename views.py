@@ -6,6 +6,7 @@ from app import app
 from models.All import Img, Tag, ImgTags
 from db import db
 import utilities.DbInterface as DbInterface
+import asyncio
 
 from utilities.ImageProcessing import process_image, delete_image_and_metadata
 from helpers.prep_images_for_display import prep_images_for_display
@@ -71,5 +72,5 @@ def delete(image_id):
 
 
 if __name__ == '__main__':
-   app.run(debug=True)
+   app.run()
 

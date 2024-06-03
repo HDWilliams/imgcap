@@ -10,6 +10,7 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="https://kit.fontawesome.com/3197ac8a0a.js" crossorigin="anonymous"></script>
 
+
 <style>
   .section {
     padding: 0;
@@ -40,6 +41,7 @@
   position: fixed;
   bottom: 5rem;
   right: 5rem;
+  z-index: 1000;
 }
 .no-pad-button {
   padding: 0;
@@ -140,14 +142,12 @@ var form = document.querySelector('form[method="POST"][action="/upload"]');
 // Then, select the file input and submit button
 var fileInput = form.querySelector('input[type="file"]');
 // Add an event listener to the submit button
-fileInput.addEventListener('change', function(event) {
+form.addEventListener('change', function(event) {
   // Prevent the default form submission
   event.preventDefault();
 
   // Log the selected file to the console
   var file = fileInput.files[0];
-  console.log(file);
-
   // Create a new FormData object
   var formData = new FormData();
   formData.append('file', file);
