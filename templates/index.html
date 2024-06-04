@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html class="has-background-dark">
 <head>
-<title>Img Cap</title>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script src="https://kit.fontawesome.com/3197ac8a0a.js" crossorigin="anonymous"></script>
+  <title>Composition</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="https://kit.fontawesome.com/3197ac8a0a.js" crossorigin="anonymous"></script>
 
+
+</head>
 
 <style>
   .section {
-    padding: 0;
+  padding: 0;
   }
   .container {
     max-width: 100%;
@@ -36,63 +38,82 @@
   }
   input[type="file"] {
     display: none;
-}
-.bottom-right-button-container {
+  }
+  .bottom-right-button-container {
   position: fixed;
   bottom: 5rem;
   right: 5rem;
-  z-index: 1000;
-}
-.no-pad-button {
+  z-index: 999;
+  }
+  .no-pad-button {
   padding: 0;
   padding-left: 1.5em !important;
   padding-right: 1.5em !important;
   padding-top: 2em;
   padding-bottom: 1.9em;
-}
-.nav-left {
+  }
+  .nav-left {
   padding-left: 2em;
-}
-.top-search {
+  }
+  .top-search {
   padding-bottom: 2rem;
-}
+  }
 
-.activate-buttton {
+  .activate-buttton {
   display: inline;
   position: relative;
 
-}
+  }
 
-.delete {
+  .delete {
   display: none;
   position: absolute;
   top: 0;
   left: 0;
   position: absolute;
-}
+  }
 
-.activate-buttton:hover .delete {
+  .activate-buttton:hover .delete {
   display: block;
-  
-}
-.delete-btn {
+
+  }
+  .delete-btn {
     background: none;
     border: none;
-  
-}
+    padding: 5px;
+
+  }
+  .overlay{
+  position:fixed;
+  display:none;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1000;
+  }
+  .uploading-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 20px;
+  }
+
 </style>
-</head>
-
-
-
 <body>
+
 
   <nav class="panel has-background-dark">
 
     <a href="/"><i class="nav-left fa fa-home" aria-hidden="true"></i></a>
 
   </nav>
-
+  <div class="overlay" id="overlay">
+    <div class="uploading-message">Uploading Image...</div>
+  </div>
   <form method="POST" action="/upload" enctype="multipart/form-data" class="bottom-right-button-container">
     <label for="file-upload" class="button no-pad-button is-rounded is-primaroy is-normal"> <i class="fa-solid fa-plus"></i></label>
     <input id="file-upload" type="file" accept=".jpg, .png" name="image"> 
@@ -133,17 +154,24 @@
     </div>
     </div>
   </section>
+</body>
 <script>
+  //OVERLAY MANAGEMENT ON UPLOAD
+function showOverlay() {
+    document.getElementById('overlay').style.display = 'block';
+  }
+function hideOverlay() {
+    document.getElementById('overlay').style.display = 'hide';
+  }
 
-///
-  // First, select the form using its method and action attributes
+//IMAGE SUBMISSION
 var form = document.querySelector('form[method="POST"][action="/upload"]');
 
-// Then, select the file input and submit button
 var fileInput = form.querySelector('input[type="file"]');
-// Add an event listener to the submit button
+
 form.addEventListener('change', function(event) {
   // Prevent the default form submission
+  showOverlay();
   event.preventDefault();
 
   // Log the selected file to the console
@@ -163,11 +191,14 @@ form.addEventListener('change', function(event) {
             window.location.href = response.url;
         }
       })   
-  .catch(error => console.error(error));
+  .catch(error => {
+    console.error(error)
+    alert('Image upload failed, please try again...')
+    hideOverlay()
+  });
 });
-</script>
-<script>
-  //AUTOCOMPLETE WITH JQUERY AND FILTERING OF AUTOCOMPLETE SUGGESTIONS
+
+//AUTOCOMPLETE WITH JQUERY AND FILTERING OF AUTOCOMPLETE SUGGESTIONS
   $(document).ready(function() {
   $("#search").autocomplete({
     source: function(request, response) {
@@ -187,6 +218,6 @@ form.addEventListener('change', function(event) {
   });
 });
 
-  </script>
-</body>
+
+</script>
 </html>  
