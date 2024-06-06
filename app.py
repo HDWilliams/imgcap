@@ -1,7 +1,10 @@
 import os
+import fasttext.util
 from flask import Flask
+import fasttext
 from db import db
 from models.All import Img, Tag, ImgTags
+
 
 
 app = Flask(__name__)
@@ -18,8 +21,11 @@ app.app_context().push()
 db.init_app(app)
 print('initiated app')
 
+fasttext_model = fasttext.load_model(r'C:\Users\hughd\Documents\Future Work\Coding Projects\imgcap\imgcap\fasttext\dbpedia.ftz')
+
 #needs to be imported after app is initiated
 import views
+
 
 #REMOVED FOR PRODUCTION TO TABLES ARE NOT RECREATED
 #with app.app_context():

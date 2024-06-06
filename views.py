@@ -5,8 +5,8 @@ from flask_sqlalchemy import SQLAlchemy
 from app import app
 from models.All import Img, Tag, ImgTags
 from db import db
+from app import fasttext_model
 import utilities.DbInterface as DbInterface
-import asyncio
 
 from utilities.ImageProcessing import process_image, delete_image_and_metadata
 from helpers.prep_images_for_display import prep_images_for_display
