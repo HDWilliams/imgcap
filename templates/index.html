@@ -53,10 +53,22 @@
   padding-bottom: 1.9em;
   }
   .nav-left {
-  padding-left: 2em;
+  padding-left: 1em;
+  padding-bottom: 1em;
+  padding-top: 0.5em;
+  justify-content: left;
+  flex-grow: 0;
+  position: absolute;
+  left: 1%;
+  top: 1%;
+  
   }
   .top-search {
-  padding-bottom: 2rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  position: relative;
+  margin: auto;
+  width: 50vw;
   }
 
   .activate-buttton {
@@ -70,7 +82,6 @@
   position: absolute;
   top: 0;
   left: 0;
-  position: absolute;
   }
 
   .activate-buttton:hover .delete {
@@ -80,7 +91,7 @@
   .delete-btn {
     background: none;
     border: none;
-    padding: 5px;
+    padding: 0px;
 
   }
   .overlay{
@@ -101,38 +112,37 @@
   color: white;
   font-size: 20px;
   }
-
+.top-nav {
+  position: fixed;
+}
 </style>
 <body>
 
 
   <nav class="panel has-background-dark">
-
-    <a href="/"><i class="nav-left fa fa-home" aria-hidden="true"></i></a>
-
+    <div style="display: flex; align-items: center; position: relative;">
+      <a href="/"><i class="nav-left fa fa-home" aria-hidden="true"></i></a>
+      <div class="top-search">
+        <form class="field" autocomplete="off" method="GET" action="/search" enctype="application/x-www-form-urlencoded">
+          <div class="field has-addons" style="justify-content: center;">
+            <div class="control">
+              <input class=" input is-rounded" id="search" type="search" name="search" placeholder="search">
+            </div>
+            <div class="control">
+              <input class="button is-rounded is-primary" type="submit" value="search">
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
   </nav>
   <div class="overlay" id="overlay">
-    <div class="uploading-message">Uploading Image...</div>
+    <div class="uploading-message">Working as fast as we can. Please wait...</div>
   </div>
   <form method="POST" action="/upload" enctype="multipart/form-data" class="bottom-right-button-container">
     <label for="file-upload" class="button no-pad-button is-rounded is-primaroy is-normal"> <i class="fa-solid fa-plus"></i></label>
     <input id="file-upload" type="file" accept=".jpg, .png" name="image"> 
   </form>
-
-  <div class="top-search">
-    <form class="field" autocomplete="off" method="GET" action="/search" enctype="application/x-www-form-urlencoded">
-      <div class="field has-addons" style="justify-content: center;">
-        <div class="control">
-          <input class=" input is-rounded" id="search" type="search" name="search" placeholder="search">
-        </div>
-        <div class="control">
-          <input class="button is-rounded is-primary" type="submit" value="search">
-        </div>
-      </div>
-    </form>
-  </div>
-
-
 
   <section class="section">
     <div class="container">
@@ -144,9 +154,7 @@
             <figure class="image">
               <img src="{{ image.img_uri }}" alt="Image">
             </figure>
-            <form class="delete" action="{{ url_for('delete', image_id = image.id)}}" method="post" style="position: absolute;">
-              <button class="delete-btn" type="submit">X</button>
-            </form>
+            <button id="{{ image.id }}" url="{{ url_for('delete', image_id = image.id)}}" class="delete delete-btn" type="submit"></button>
           </div>
         {% endfor %}
       </div>
@@ -198,6 +206,33 @@ form.addEventListener('change', function(event) {
   });
 });
 
+document.querySelectorAll('.delete-btn').forEach(function(button) {
+  button.addEventListener('click', 
+  function(event){
+    event.preventDefault();
+    showOverlay();
+
+    let image_id = this.getAttribute('image_id')
+    let url = this.getAttribute('url')
+
+    fetch(url, {
+      method: 'POST', 
+      headers: {
+       'Content-Type': 'application/json'
+    }
+  })
+  .then((response) =>{ 
+    if(response.redirected){
+            window.location.href = response.url;
+        }
+    }
+  )
+  .catch((error) => {
+    console.error('Error:', error);
+    hideOverlay()
+  });
+});
+});
 //AUTOCOMPLETE WITH JQUERY AND FILTERING OF AUTOCOMPLETE SUGGESTIONS
   $(document).ready(function() {
   $("#search").autocomplete({
@@ -217,7 +252,6 @@ form.addEventListener('change', function(event) {
     }
   });
 });
-
 
 </script>
 </html>  
