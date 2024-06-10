@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="has-background-dark">
+<html style="background-color: #f6f4f1;">
 <head>
   <title>Composition</title>
   <meta charset="utf-8">
@@ -19,6 +19,8 @@
   }
   .container {
     max-width: 100%;
+    padding-left: 1em;
+    padding-right: 1em;
   }
   .columns {
     display: flex;
@@ -41,8 +43,8 @@
   }
   .bottom-right-button-container {
   position: fixed;
-  bottom: 5rem;
-  right: 5rem;
+  bottom: 10%;
+  right: 10%;
   z-index: 999;
   }
   .no-pad-button {
@@ -53,14 +55,15 @@
   padding-bottom: 1.9em;
   }
   .nav-left {
-  padding-left: 1em;
+  padding-left: 0.5em;
   padding-bottom: 1em;
-  padding-top: 0.5em;
+  padding-top: 0.4em;
   justify-content: left;
   flex-grow: 0;
   position: absolute;
   left: 1%;
   top: 1%;
+  color:black;
   
   }
   .top-search {
@@ -119,7 +122,7 @@
 <body>
 
 
-  <nav class="panel has-background-dark">
+  <nav class="panel is-transparent">
     <div style="display: flex; align-items: center; position: relative;">
       <a href="/"><i class="nav-left fa fa-home" aria-hidden="true"></i></a>
       <div class="top-search">
@@ -129,7 +132,7 @@
               <input class=" input is-rounded" id="search" type="search" name="search" placeholder="search">
             </div>
             <div class="control">
-              <input class="button is-rounded is-primary" type="submit" value="search">
+              <input class="button is-rounded is-black" type="submit" value="search">
             </div>
           </div>
         </form>
@@ -140,13 +143,13 @@
     <div class="uploading-message">Working as fast as we can. Please wait...</div>
   </div>
   <form method="POST" action="/upload" enctype="multipart/form-data" class="bottom-right-button-container">
-    <label for="file-upload" class="button no-pad-button is-rounded is-primaroy is-normal"> <i class="fa-solid fa-plus"></i></label>
+    <label for="file-upload" class="button no-pad-button is-rounded is-black is-normal"> <i class="fa-solid fa-plus is-white"></i></label>
     <input id="file-upload" type="file" accept=".jpg, .png" name="image"> 
   </form>
 
   <section class="section">
     <div class="container">
-      <div class="columns is-gapless is-multiline">
+      <div class="columns is-multiline">
         {% for column_images in images %}
         <div class="column">
         {% for image in column_images %}
