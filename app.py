@@ -4,7 +4,7 @@ from flask import Flask
 import fasttext
 from db import db
 from models.All import Img, Tag, ImgTags
-
+from sqlalchemy import text
 
 
 app = Flask(__name__)
@@ -21,7 +21,7 @@ app.app_context().push()
 db.init_app(app)
 print('initiated app')
 
-fasttext_model = fasttext.load_model(r'C:\Users\hughd\Documents\Future Work\Coding Projects\imgcap\imgcap\fasttext\dbpedia.ftz')
+fasttext_model = fasttext.load_model(r'C:\Users\hughd\Documents\Future Work\Coding Projects\imgcap\imgcap\fasttext\dbpedia.bin')
 
 #needs to be imported after app is initiated
 import views
@@ -31,3 +31,5 @@ import views
 #with app.app_context():
 #    db.drop_all()
 #    db.create_all()
+db.session.execute(text('CREATE EXTENSION IF NOT EXISTS vector'))
+db.session.commit()

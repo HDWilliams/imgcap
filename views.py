@@ -26,8 +26,7 @@ def home():
         logging.exception(e)
         flash('Could not load images. Please check connection and try again')
         raise ConnectionError('Unable to connect to server. This may be a server issue, please check connection and try again')
-
-    return render_template('index.html', images=prep_images_for_display(images))
+    return render_template('index.html', images=images)
 
 @app.route('/upload', methods = ['POST'])
 def upload():
@@ -65,7 +64,7 @@ def search():
     #GET ONLY DISTINCT TAGS TO AVOID DUPLICATE IMAGES
     tags_from_query = DbInterface.get_query_by_tag(request.values.get('search'))
     images_from_tags = DbInterface.get_img_from_tag(tags_from_query)
-    return render_template('index.html', images=prep_images_for_display(images_from_tags))
+    return render_template('index.html', images=images_from_tags)
 
 
 @app.route('/image/<int:id>')

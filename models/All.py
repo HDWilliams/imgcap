@@ -3,7 +3,7 @@ FOR EASIER LOADING AND CONNECTING TABLES
 ORDER OF IMPORT MATTERS"""
 from sqlalchemy import String, Column, Integer
 from db import db
-
+from pgvector.sqlalchemy import Vector
 
 
 ImgTags = db.Table('imgtags', db.metadata,
@@ -30,6 +30,7 @@ class Tag(db.Model):
     __tablename__ = "Tag"
     id = Column(Integer, primary_key=True)
     value = Column(String(200))
+    embedding = Column(Vector(10))
 
     def __repr__(self) -> str:
         return f"<Tags {self.id}>"

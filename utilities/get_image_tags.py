@@ -3,6 +3,7 @@ from openai import OpenAI
 from db import db
 import logging
 
+
 import utilities.DbInterface as DbInterface
 
 
@@ -40,7 +41,7 @@ def get_image_tags_gpt(image_uri):
     return tags
 
 def tag_image(image_uri, image_id):
-    """get tags from chatgpt and update database asynchronously"""
+    """get tags from chatgpt and update database"""
     tags = get_image_tags_gpt(image_uri)
     if tags:
         DbInterface.update_tags(image_id, tags)

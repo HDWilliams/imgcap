@@ -71,7 +71,6 @@
   padding-bottom: 1rem;
   position: relative;
   margin: auto;
-  width: 50vw;
   }
 
   .activate-buttton {
@@ -118,18 +117,47 @@
 .top-nav {
   position: fixed;
 }
+.navbar-item {
+  display: inline-flex;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: white;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  right: 50%;
+  top: 50%;
+  width: 80vw;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
 </style>
-<body>
+<body class="has-navbar-fixed-top">
 
+  <nav class="navbar is-flex is-transparent is-fixed-top" style="align-items: center;">
+        <a class="navbar-item" href="/">
+          <span class="icon is-small">
+            <i class="fa fa-home" aria-hidden="true"></i>
+          </span>
+        </a>
 
-  <nav class="panel is-transparent">
-    <div style="display: flex; align-items: center; position: relative;">
-      <a href="/"><i class="nav-left fa fa-home" aria-hidden="true"></i></a>
-      <div class="top-search">
+      <div class="top-search navbar-item">
         <form class="field" autocomplete="off" method="GET" action="/search" enctype="application/x-www-form-urlencoded">
           <div class="field has-addons" style="justify-content: center;">
             <div class="control">
-              <input class=" input is-rounded" id="search" type="search" name="search" placeholder="search">
+              <input class="input is-rounded" id="search" type="search" name="search" placeholder="search">
             </div>
             <div class="control">
               <input class="button is-rounded is-black" type="submit" value="search">
@@ -137,8 +165,17 @@
           </div>
         </form>
       </div>
-    </div>
+
+        <div class="navbar-item tooltip">
+          <i class="fa fa-info-circle"></i>
+          <span class="tooltiptext">Welcome to Composition Inspiration: This project 
+            stores images and makes them searchable by content, related emotions 
+            and most uniquely photographic composition techniques. Please feel free to 
+            search and add appropriate images and test the functionality. This project is built
+          using flask, and bulma</span>
+        </div>
   </nav>
+
   <div class="overlay" id="overlay">
     <div class="uploading-message">Working as fast as we can. Please wait...</div>
   </div>
@@ -147,22 +184,20 @@
     <input id="file-upload" type="file" accept=".jpg, .png" name="image"> 
   </form>
 
-  <section class="section">
+  <section class="section" style="margin-top: 7%;">
     <div class="container">
       <div class="columns is-multiline">
-        {% for column_images in images %}
-        <div class="column">
-        {% for image in column_images %}
-          <div class="activate-buttton">
-            <figure class="image">
-              <img src="{{ image.img_uri }}" alt="Image">
-            </figure>
-            <button id="{{ image.id }}" url="{{ url_for('delete', image_id = image.id)}}" class="delete delete-btn" type="submit"></button>
+        {% for image in images %}
+          <div class="column is-half-desktop is-full-mobile">
+            <div class="activate-buttton">
+              <figure class="image">
+                <img src="{{ image.img_uri }}" alt="Image">
+              </figure>
+              <button id="{{ image.id }}" url="{{ url_for('delete', image_id = image.id)}}" class="delete delete-btn" type="submit"></button>
+            </div>
           </div>
         {% endfor %}
       </div>
-      {% endfor %}
-    </div>
     </div>
   </section>
 </body>

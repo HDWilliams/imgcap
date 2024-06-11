@@ -1,9 +1,11 @@
 from flask import flash
 from html import escape
+from sqlalchemy import select
 from models.All import Img, Tag, ImgTags
 import app
 from db import db
 import logging
+from app import fasttext_model
 
 
 def save_img(file_path, uri) -> Img:
@@ -27,11 +29,11 @@ def update_tags(image_id, tags):
         img:Img = Img.query.get(image_id)
 
         for tag_to_add in tags:
-            tag = Tag(value = tag_to_add.strip())
+            #split in the case of multi word tags, each is added individually
+            for word in tag_to_add.split():
+                tag = Tag(value = word, embedding = fasttext_model[word])
             img.tags.append(tag)
-
-        #save in DB
-        db.session.add(tag)
+            db.session.add(tag)
         db.session.add(img)
         db.session.commit()
     return
@@ -81,7 +83,21 @@ def get_query_by_tag(search_query):
         [] if exception
     """
     try:
-        tags_from_query = Tag.query.distinct(Tag.value).filter(Tag.value.like(escape(search_query) + "%")).all()
+        # Define the l2_distance expression
+        distance_expr = Tag.embedding.l2_distance(fasttext_model[search_query])
+
+        # Include the l2_distance expression in your select clause
+        query = select(Tag, distance_expr.label('distance')).order_by(distance_expr)
+
+        # Execute the query
+        result = db.session.execute(query)
+
+        # Print the tags and their distances
+        for row in result:
+            tag, distance = row
+            print(f'Tag: {tag.value}, Distance: {distance}')
+        tags_from_query = db.session.scalars(select(Tag).where(Tag.embedding.l2_distance(fasttext_model[search_query]) < 0.6))
+        #Tag.query.distinct(Tag.value).filter(Tag.value.like(escape(search_query) + "%")).all()
     except FileNotFoundError:
         return []
     except Exception as e:
