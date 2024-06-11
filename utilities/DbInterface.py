@@ -83,21 +83,8 @@ def get_query_by_tag(search_query):
         [] if exception
     """
     try:
-        # Define the l2_distance expression
-        distance_expr = Tag.embedding.l2_distance(fasttext_model[search_query])
-
-        # Include the l2_distance expression in your select clause
-        query = select(Tag, distance_expr.label('distance')).order_by(distance_expr)
-
-        # Execute the query
-        result = db.session.execute(query)
-
-        # Print the tags and their distances
-        for row in result:
-            tag, distance = row
-            print(f'Tag: {tag.value}, Distance: {distance}')
-        tags_from_query = db.session.scalars(select(Tag).where(Tag.embedding.l2_distance(fasttext_model[search_query]) < 0.6))
-        #Tag.query.distinct(Tag.value).filter(Tag.value.like(escape(search_query) + "%")).all()
+        #tags_from_query = db.session.scalars(select(Tag).where(Tag.embedding.l2_distance(fasttext_model[search_query]) < 0.6))
+        tags_from_query = Tag.query.distinct(Tag.value).filter(Tag.value.like(escape(search_query.lower()) + "%")).all()
     except FileNotFoundError:
         return []
     except Exception as e:

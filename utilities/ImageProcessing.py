@@ -1,7 +1,8 @@
+import os
 from werkzeug.utils import secure_filename
 import utilities.StorageInterface as StorageInterface
 import utilities.DbInterface as DbInterface
-from utilities.get_image_tags import tag_image
+from utilities.get_image_tags import tag_image, get_image_tags_aws
 from models.All import Img
 from helpers.compress_image import compress_image
 
@@ -12,7 +13,7 @@ def process_image(file):
   image_uri = StorageInterface.upload_to_aws(image, filename_secured)
   if image_uri:
     img = DbInterface.save_img(filename_secured, image_uri)
-    tag_image(image_uri, img.id)
+    tag_image(image_uri, img.id, filename_secured, os.getenv('BUCKET'), model='aws')
   #BEGIN IMAGE CAPTIONING, AS OF 05/2024 USING CHATGPT FOR CAPTIONING
   return
 
