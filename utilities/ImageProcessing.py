@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from werkzeug.utils import secure_filename
 import utilities.StorageInterface as StorageInterface
 import utilities.DbInterface as DbInterface
@@ -8,7 +9,7 @@ from helpers.compress_image import compress_image
 
 def process_image(file):
   """saves image to CDN, upon completion starts image captioning (new thread), and then updates database with image metadata"""
-  filename_secured = secure_filename(file.filename)
+  filename_secured = datetime.now().strftime("%Y%m%d_%H%M%S") + secure_filename(file.filename)
   image = compress_image(file)
   image_uri = StorageInterface.upload_to_aws(image, filename_secured)
   if image_uri:

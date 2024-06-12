@@ -1,11 +1,11 @@
 from flask import flash
 from html import escape
-from sqlalchemy import select
+from sqlalchemy import select, func
 from models.All import Img, Tag, ImgTags
 import app
 from db import db
 import logging
-from app import fasttext_model
+from utilities.get_embeddings import get_embeddings
 
 
 def save_img(file_path, uri) -> Img:
@@ -23,6 +23,7 @@ def save_img(file_path, uri) -> Img:
 def update_tags(image_id, tags):
     """update an existing image with tags from chatgpt
     Args:
+        image_id str
         tags [Tag] 
     """
     with app.app.app_context():
@@ -30,8 +31,7 @@ def update_tags(image_id, tags):
 
         for tag_to_add in tags:
             #split in the case of multi word tags, each is added individually
-            for word in tag_to_add.split():
-                tag = Tag(value = word, embedding = fasttext_model[word])
+            tag = Tag(value = tag_to_add, embedding = get_embeddings(tag_to_add)[0][1])
             img.tags.append(tag)
             db.session.add(tag)
         db.session.add(img)
@@ -44,7 +44,8 @@ def get_img_from_tag(tags:list):
     if tags:
         for tag in tags:
             images_from_tags += tag.images
-    return images_from_tags
+    #REMOVE SET FILTERING
+    return list(set(images_from_tags))
 
 def delete_tags(image:Img):
     try:
@@ -83,8 +84,8 @@ def get_query_by_tag(search_query):
         [] if exception
     """
     try:
-        #tags_from_query = db.session.scalars(select(Tag).where(Tag.embedding.l2_distance(fasttext_model[search_query]) < 0.6))
-        tags_from_query = Tag.query.distinct(Tag.value).filter(Tag.value.like(escape(search_query.lower()) + "%")).all()
+        tags_from_query = Tag.query.where(Tag.embedding.l2_distance(get_embeddings(search_query)[0][1]) < 1)
+        #tags_from_query = Tag.query.distinct(Tag.value).filter(Tag.value.like(escape(search_query.lower()) + "%")).all()
     except FileNotFoundError:
         return []
     except Exception as e:

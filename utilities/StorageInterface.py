@@ -22,7 +22,7 @@ def upload_to_aws(file, s3_file, bucket = os.getenv('BUCKET')):
     #create client specific to aws s3
     s3 = boto3.client('s3')
     image_file_bytes = BytesIO(file)
-
+    #ADD DATETIME MARKER TO MAKE IMAGE NAMES UNIQUE
     try:
         s3.put_object(Bucket=bucket, Key=s3_file, Body=image_file_bytes )
         print("Upload Successful")

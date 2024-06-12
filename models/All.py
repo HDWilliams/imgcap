@@ -30,7 +30,7 @@ class Tag(db.Model):
     __tablename__ = "Tag"
     id = Column(Integer, primary_key=True)
     value = Column(String(200))
-    embedding = Column(Vector(10))
+    embedding = Column(Vector(50))
 
     def __repr__(self) -> str:
         return f"<Tags {self.id}>"
