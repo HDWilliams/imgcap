@@ -25,8 +25,8 @@ import views
 
 
 #REMOVED FOR PRODUCTION TO TABLES ARE NOT RECREATED
-with app.app_context():
-    db.drop_all()
-    db.create_all()
+#with app.app_context():
+    #db.drop_all()
+    #db.create_all()
 db.session.execute(text('CREATE EXTENSION IF NOT EXISTS vector'))
 db.session.commit()

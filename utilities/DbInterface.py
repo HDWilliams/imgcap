@@ -1,7 +1,8 @@
 from flask import flash
 from html import escape
 from sqlalchemy import select, func
-from models.All import Img, Tag, ImgTags
+from models.All import Img, Tag
+from models.All import ImgTags
 import app
 from db import db
 import logging
