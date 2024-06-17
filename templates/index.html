@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-  <script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-latest.js"></script>
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <script src="https://kit.fontawesome.com/3197ac8a0a.js" crossorigin="anonymous"></script>
 
@@ -30,6 +30,8 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
+    height: max-content;
+    margin: auto;
   }
   .image img {
     width: 100%;
@@ -106,7 +108,7 @@
   background-color: rgba(0,0,0,0.5);
   z-index: 1000;
   }
-  .uploading-message {
+  .overlay-message {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -119,28 +121,6 @@
 }
 .navbar-item {
   display: inline-flex;
-}
-
-.tooltip .tooltiptext {
-  visibility: hidden;
-  width: 120px;
-  background-color: white;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px 0;
-  position: absolute;
-  right: 50%;
-  top: 50%;
-  width: 80vw;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.tooltip:hover .tooltiptext {
-  visibility: visible;
-  opacity: 1;
 }
 
 </style>
@@ -166,18 +146,16 @@
         </form>
       </div>
 
-        <div class="navbar-item tooltip">
-          <i class="fa fa-info-circle"></i>
-          <span class="tooltiptext">Welcome to Composition Inspiration: This project 
-            stores images and makes them searchable by content, related emotions 
-            and most uniquely photographic composition techniques. Please feel free to 
-            search and add appropriate images and test the functionality. This project is built
-          using flask, and bulma</span>
+        <div class="navbar-item">
+          <a href="https://github.com/HDWilliams/imgcap"><i class="fa fa-brands fa-github"></i></a>
         </div>
   </nav>
 
-  <div class="overlay" id="overlay">
-    <div class="uploading-message">Working as fast as we can. Please wait...</div>
+  <div class="overlay" id="overlay-upload">
+    <div class="overlay-message">Uploading image as fast as we can. Please wait...</div>
+  </div>
+  <div class="overlay" id="overlay-delete">
+    <div class="overlay-message">Deleting image. Please wait...</div>
   </div>
   <form method="POST" action="/upload" enctype="multipart/form-data" class="bottom-right-button-container">
     <label for="file-upload" class="button no-pad-button is-rounded is-black is-normal"> <i class="fa-solid fa-plus is-white"></i></label>
@@ -188,7 +166,7 @@
     <div class="container">
       <div class="columns is-multiline">
         {% for image in images %}
-          <div class="column is-half-desktop is-full-mobile">
+          <div class="column is-half-desktop is-full-mobile is-half">
             <div class="activate-buttton">
               <figure class="image">
                 <img src="{{ image.img_uri }}" alt="Image">
@@ -203,11 +181,11 @@
 </body>
 <script>
   //OVERLAY MANAGEMENT ON UPLOAD
-function showOverlay() {
-    document.getElementById('overlay').style.display = 'block';
+function showOverlay(element_id) {
+    document.getElementById(element_id).style.display = 'block';
   }
-function hideOverlay() {
-    document.getElementById('overlay').style.display = 'hide';
+function hideOverlay(element_id) {
+    document.getElementById(element_id).style.display = 'hide';
   }
 
 //IMAGE SUBMISSION
@@ -216,39 +194,42 @@ var form = document.querySelector('form[method="POST"][action="/upload"]');
 var fileInput = form.querySelector('input[type="file"]');
 
 form.addEventListener('change', function(event) {
-  // Prevent the default form submission
-  showOverlay();
+  var max_file_size = 1048576*5
+  showOverlay("overlay-upload");
   event.preventDefault();
 
-  // Log the selected file to the console
   var file = fileInput.files[0];
-  // Create a new FormData object
-  var formData = new FormData();
-  formData.append('file', file);
+  if (file.size > max_file_size){
+    alert('File too big. Please upload a file <5MB')
+  }
+  else{
+    var formData = new FormData();
+    formData.append('file', file);
 
-  // Use the fetch API to submit the form data
-  fetch('/upload', {
-    method: 'POST',
-    body: formData,
-    redirect: 'follow'
-  })
-  .then((response)=>{         
-        if(response.redirected){
-            window.location.href = response.url;
-        }
-      })   
-  .catch(error => {
-    console.error(error)
-    alert('Image upload failed, please try again...')
-    hideOverlay()
-  });
+    // Use the fetch API to submit the form data
+    fetch('/upload', {
+      method: 'POST',
+      body: formData,
+      redirect: 'follow'
+    })
+    .then((response)=>{         
+          if(response.redirected){
+              window.location.href = response.url;
+          }
+        })   
+    .catch(error => {
+      console.error(error)
+      alert('Image upload failed, please try again...')
+      hideOverlay("overlay-upload")
+    });
+  }
 });
 
 document.querySelectorAll('.delete-btn').forEach(function(button) {
   button.addEventListener('click', 
   function(event){
     event.preventDefault();
-    showOverlay();
+    showOverlay("overlay-delete");
 
     let image_id = this.getAttribute('image_id')
     let url = this.getAttribute('url')
@@ -267,7 +248,7 @@ document.querySelectorAll('.delete-btn').forEach(function(button) {
   )
   .catch((error) => {
     console.error('Error:', error);
-    hideOverlay()
+    hideOverlay("overlay-delete")
   });
 });
 });
