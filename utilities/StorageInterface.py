@@ -5,13 +5,6 @@ import boto3
 from botocore.exceptions import NoCredentialsError
 from flask import flash
 
-""" Upload a file to s3 bucket for image storage using AWS
-    credentials for s3 handled by env variables
-    returns valid object access url, or returns false
-
-    FURTHER STEP COULD BE TO USE PRESIGNED URL
-"""
-
 def upload_to_aws(file, s3_file, bucket = os.getenv('BUCKET')):
     """ add images to aws (s3) CDN, 
     Args:
@@ -25,16 +18,15 @@ def upload_to_aws(file, s3_file, bucket = os.getenv('BUCKET')):
     #ADD DATETIME MARKER TO MAKE IMAGE NAMES UNIQUE
     try:
         s3.put_object(Bucket=bucket, Key=s3_file, Body=image_file_bytes )
-        print("Upload Successful")
         return f"https://{bucket}.s3.{os.getenv('AWS_REGION')}.amazonaws.com/{s3_file}"
-    except FileNotFoundError:
+    except FileNotFoundError as e:
+        logging.exception(e)
         print("The file was not found")
         return False
-    except NoCredentialsError:
+    except NoCredentialsError as e:
+        logging.exception(e)
         print("Credentials not available")
         return False
-    except Exception as e:
-        logging.exception(e)
 
 def delete_from_aws(key, bucket = os.getenv('BUCKET')):
     """ 
@@ -49,10 +41,15 @@ def delete_from_aws(key, bucket = os.getenv('BUCKET')):
         s3.delete_object(Bucket=bucket, Key=key)
     except FileNotFoundError:
         print("The file was not found")
+        logging.exception(e)
         return False
+    
     except NoCredentialsError:
         print("Credentials not available")
+        logging.exception(e)
         return False
     except Exception as e:
         flash('Delete operation has succeed at database level but failed to delete from CDN. No further action needed')
+        logging.exception(e)
+        return False
     return True

@@ -1,9 +1,11 @@
 """INCLUDING ALL DB MODELS IN ONE FILE 
 FOR EASIER LOADING AND CONNECTING TABLES
 ORDER OF IMPORT MATTERS"""
-from sqlalchemy import String, Column, Integer
+from sqlalchemy import String, Column, Integer, DateTime
+from sqlalchemy.sql import func
 from db import db
 from pgvector.sqlalchemy import Vector
+
 
 
 ImgTags = db.Table('imgtags', db.metadata,
@@ -20,6 +22,7 @@ class Img(db.Model):
     img_uri = Column(String)
     image_type = Column(String(200))
     description = Column(String(200))
+    date_created = Column(DateTime, default=func.now())
     tags = db.relationship('Tag', secondary=ImgTags, backref=db.backref('images'))
 
     def __repr__(self) -> str:

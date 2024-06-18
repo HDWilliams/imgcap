@@ -18,6 +18,9 @@ def home():
     images = []
     try:
         images = Img.query.all()
+        #if no images query will return None type object
+        if images is not None:
+            images.sort(key=lambda x: x.date_created, reverse=True)
     except OperationalError as e:
         logging.exception(e)
         raise ConnectionError('Unable to connect to server. Please check connection')
@@ -49,7 +52,7 @@ def autocomplete():
     FOR SEARCH BAR AUTOCOMPLETE"""
     tags = []
     try:
-        tags = db.session.query(Tag).all()
+        tags = db.session.query(Tag).distinct(Tag.value).all()
         tags = [tag.value for tag in tags]
     except Exception as e:
         logging.exception(e)
@@ -61,7 +64,7 @@ def search():
     FROM TAGS AND SPLIT INTO TWO LISTS FOR DISPLAY"""
     
     #GET ONLY DISTINCT TAGS TO AVOID DUPLICATE IMAGES
-    tags_from_query = DbInterface.get_query_by_tag(request.values.get('search'))
+    tags_from_query = DbInterface.get_query_by_tag(request.values.get('search'), 0.9)
     images_from_tags = DbInterface.get_img_from_tag(tags_from_query)
     return render_template('index.html', images=images_from_tags)
 

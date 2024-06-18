@@ -1,3 +1,4 @@
+import os
 from flask import flash
 from html import escape
 from sqlalchemy import select, func
@@ -45,7 +46,7 @@ def get_img_from_tag(tags:list):
     if tags:
         for tag in tags:
             images_from_tags += tag.images
-    #REMOVE SET FILTERING
+    #REVIEW FOR MORE OPTIMAL SOLUTION USING ONLY SQL QUERY FILTERING
     return list(set(images_from_tags))
 
 def delete_tags(image:Img):
@@ -76,7 +77,7 @@ def delete_img(image:Img):
         return False
     return True
 
-def get_query_by_tag(search_query):
+def get_query_by_tag(search_query, search_l2_threshold):
     """OBTAIN RELEVANT TAGS FROM SEARCH QUERY
     Args:
         search_query(str): query from request
@@ -85,7 +86,7 @@ def get_query_by_tag(search_query):
         [] if exception
     """
     try:
-        tags_from_query = Tag.query.where(Tag.embedding.l2_distance(get_embeddings(search_query)[0][1]) < 1)
+        tags_from_query = Tag.query.where(Tag.embedding.l2_distance(get_embeddings(search_query)[0][1]) < search_l2_threshold)
         #tags_from_query = Tag.query.distinct(Tag.value).filter(Tag.value.like(escape(search_query.lower()) + "%")).all()
     except FileNotFoundError:
         return []

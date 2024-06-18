@@ -18,7 +18,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.app_context().push()
 
 db.init_app(app)
-print('initiated app')
 
 #needs to be imported after app is initiated
 import views
