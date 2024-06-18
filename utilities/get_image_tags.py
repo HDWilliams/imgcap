@@ -63,7 +63,6 @@ def tag_image(image_uri, image_id, image_name, bucket, model='aws'):
     """get tags from chatgpt and update database"""
     if model == 'aws':
         tags = get_image_tags_aws(image_name, bucket)
-        print(tags)
     elif model == 'gpt':
         tags = get_image_tags_gpt(image_uri)
     if tags:

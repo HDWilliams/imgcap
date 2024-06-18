@@ -20,7 +20,7 @@ def home():
         images = Img.query.all()
         #if no images query will return None type object
         if images is not None:
-            images.sort(key=lambda x: x.date_created, reverse=True)
+            images.sort(key=lambda x: x.date_created)
     except OperationalError as e:
         logging.exception(e)
         raise ConnectionError('Unable to connect to server. Please check connection')
