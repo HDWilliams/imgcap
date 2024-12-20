@@ -1,12 +1,19 @@
 import os
 import fasttext.util
 from flask import Flask
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from db import db
 from models.All import Img, Tag, ImgTags
 from sqlalchemy import text
 
 
 app = Flask(__name__)
+limiter = Limiter( 
+  get_remote_address, 
+  app=app, 
+  default_limits=["200 per day", "50 per hour"] 
+)
 app.secret_key = os.getenv("SESSION_SECRET_KEY")
 
 basedir = os.path.abspath(os.path.dirname(__file__))

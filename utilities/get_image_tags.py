@@ -4,7 +4,7 @@ from db import db
 import logging
 import boto3
 
-import utilities.DbInterface as DbInterface
+import database.DbInterface as DbInterface
 
 
 def get_image_tags_gpt(image_uri):

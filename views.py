@@ -4,10 +4,10 @@ from flask import redirect, url_for, render_template, jsonify,flash,request
 from flask_sqlalchemy import SQLAlchemy
 from psycopg2 import OperationalError
 import logging
-from app import app
+from app import app, limiter
 from models.All import Img, Tag, ImgTags
 from db import db
-import utilities.DbInterface as DbInterface
+import database.DbInterface as DbInterface
 from utilities.ImageProcessing import process_image, delete_image_and_metadata
 from helpers.prep_images_for_display import prep_images_for_display
 
@@ -31,6 +31,7 @@ def home():
     return render_template('index.html', images=images)
 
 @app.route('/upload', methods = ['POST'])
+@limiter.limit("10 per minute")
 def upload():
     """ENDPOINT FOR POST REQUESTS TO ADD IMAGES TO DB
     CAPTIONING PERFORMED IN DIFFERENT THREAD
@@ -59,14 +60,22 @@ def autocomplete():
     return jsonify(tags)
 
 @app.route('/search', methods = ['GET'])
+@limiter.limit("1 per second")
 def search():
     """OBTAIN RELEVANT TAGS, GET ASOCCIATED IMAGES 
     FROM TAGS AND SPLIT INTO TWO LISTS FOR DISPLAY"""
+
+    #EMPTY SEARCH RETURN TO HOME
+    search_query = request.values.get('search')
+    if search_query == "":
+        return redirect(url_for('home'))
     
     #GET ONLY DISTINCT TAGS TO AVOID DUPLICATE IMAGES
-    tags_from_query = DbInterface.get_query_by_tag(request.values.get('search'), 0.9)
+
+    #TESTING VALUE OF 0.95 INCREASING VALUE WILL INCREASE LIKELIHOOD OF RERTURNED MATCHES
+    tags_from_query = DbInterface.get_query_by_tag(search_query, .95) 
     images_from_tags = DbInterface.get_img_from_tag(tags_from_query)
-    return render_template('index.html', images=images_from_tags)
+    return render_template('index.html', images=images_from_tags, search_query=search_query)
 
 
 @app.route('/image/<int:id>')
@@ -78,6 +87,7 @@ def serve_image(image_id):
     return img.img_uri
 
 @app.route('/delete/<int:image_id>', methods = ['POST'])
+@limiter.limit("10 per minute")
 def delete(image_id):
     """IMAGE DELETED FROM DB FIRST THEN REMOVED FROM CDN TO PREVENT TRYING ACCESS DELETED IMAGE"""
 

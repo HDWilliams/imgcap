@@ -1,8 +1,8 @@
 import os
 from datetime import datetime
 from werkzeug.utils import secure_filename
-import utilities.StorageInterface as StorageInterface
-import utilities.DbInterface as DbInterface
+import database.StorageInterface as StorageInterface
+import database.DbInterface as DbInterface
 from utilities.get_image_tags import tag_image, get_image_tags_aws
 from models.All import Img
 from helpers.compress_image import compress_image

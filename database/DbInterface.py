@@ -81,13 +81,14 @@ def get_query_by_tag(search_query, search_l2_threshold):
     """OBTAIN RELEVANT TAGS FROM SEARCH QUERY
     Args:
         search_query(str): query from request
+        search_l2_threshold: float larger number increases number of queries returned
     return:
         list of tags
         [] if exception
     """
     try:
         tags_from_query = Tag.query.where(Tag.embedding.l2_distance(get_embeddings(search_query)[0][1]) < search_l2_threshold)
-        #tags_from_query = Tag.query.distinct(Tag.value).filter(Tag.value.like(escape(search_query.lower()) + "%")).all()
+
     except FileNotFoundError:
         return []
     except Exception as e:
