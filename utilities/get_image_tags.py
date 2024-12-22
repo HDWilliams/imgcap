@@ -12,7 +12,7 @@ def get_image_tags_gpt(image_uri):
     client = OpenAI(api_key=os.environ.get('GPT_SECRET_KEY'))
     try:
         response = client.chat.completions.create(
-            model="gpt-4-vision-preview",
+            model=os.getenv("GPT_MODEL"),
             messages=[
                 {
                     "role": "user",
