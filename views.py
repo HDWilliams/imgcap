@@ -1,5 +1,6 @@
 """Handles all app routing including 
 displaying images, uploading images, search and delete"""
+from os import getenv
 from flask import redirect, url_for, render_template, jsonify,flash,request
 from flask_sqlalchemy import SQLAlchemy
 from psycopg2 import OperationalError
@@ -31,7 +32,6 @@ def home():
     return render_template('index.html', images=images)
 
 @app.route('/upload', methods = ['POST'])
-@limiter.limit("10 per minute")
 def upload():
     """ENDPOINT FOR POST REQUESTS TO ADD IMAGES TO DB
     CAPTIONING PERFORMED IN DIFFERENT THREAD
@@ -60,7 +60,6 @@ def autocomplete():
     return jsonify(tags)
 
 @app.route('/search', methods = ['GET'])
-@limiter.limit("1 per second")
 def search():
     """OBTAIN RELEVANT TAGS, GET ASOCCIATED IMAGES 
     FROM TAGS AND SPLIT INTO TWO LISTS FOR DISPLAY"""
@@ -73,7 +72,7 @@ def search():
     #GET ONLY DISTINCT TAGS TO AVOID DUPLICATE IMAGES
 
     #TESTING VALUE OF 0.95 INCREASING VALUE WILL INCREASE LIKELIHOOD OF RERTURNED MATCHES
-    tags_from_query = DbInterface.get_query_by_tag(search_query, .95) 
+    tags_from_query = DbInterface.get_query_by_tag(search_query, float(getenv("SEARCH_DISTANCE"))) 
     images_from_tags = DbInterface.get_img_from_tag(tags_from_query)
     return render_template('index.html', images=images_from_tags, search_query=search_query)
 
@@ -87,7 +86,6 @@ def serve_image(image_id):
     return img.img_uri
 
 @app.route('/delete/<int:image_id>', methods = ['POST'])
-@limiter.limit("10 per minute")
 def delete(image_id):
     """IMAGE DELETED FROM DB FIRST THEN REMOVED FROM CDN TO PREVENT TRYING ACCESS DELETED IMAGE"""
 
