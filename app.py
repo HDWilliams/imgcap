@@ -9,6 +9,23 @@ import redis
 
 app = Flask(__name__)
 
+#LIMITER IS WIP
+host='memcached-14876.c14.us-east-1-3.ec2.redns.redis-cloud.com',
+port=14876
+username=os.getenv("MEMCACHEDCLOUD_USERNAME"),
+password=os.getenv("MEMCACHEDCLOUD_PASSWORD"),
+
+#FLASK LIMITER SETUP
+storage_uri = f"redis://{os.getenv('MEMCACHEDCLOUD_USERNAME')}:{os.getenv('MEMCACHEDCLOUD_PASSWORD')}@{os.getenv('MEMCACHEDCLOUD_SERVERS')}"
+
+# Flask-Limiter Setup using Memcached as the storage, FURTHER WORK ON IMPLEMENTING TLS SECURITY 
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    storage_uri=storage_uri,
+)
+limiter.default_limits = ["20 per minute"]
+
 app.secret_key = os.getenv("SESSION_SECRET_KEY")
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -26,19 +43,3 @@ import views
 
 db.session.execute(text('CREATE EXTENSION IF NOT EXISTS vector'))
 db.session.commit()
-
-""" CURRENTLY WORK IN PROGRESS
-host='memcached-14876.c14.us-east-1-3.ec2.redns.redis-cloud.com',
-port=14876
-username=os.getenv("MEMCACHEDCLOUD_USERNAME"),
-password=os.getenv("MEMCACHEDCLOUD_PASSWORD"),
-#FLASK LIMITER SETUP
-storage_uri = f"redis://{os.getenv('MEMCACHEDCLOUD_USERNAME')}:{os.getenv('MEMCACHEDCLOUD_PASSWORD')}@{os.getenv('MEMCACHEDCLOUD_SERVERS')}"
-# Flask-Limiter Setup using Memcached as the storage, FURTHER WORK ON IMPLEMENTING TLS SECURITY 
-limiter = Limiter(
-    get_remote_address,
-    app=app,
-    storage_uri=storage_uri,
-)
-limiter.default_limits = ["20 per minute"]
-"""
